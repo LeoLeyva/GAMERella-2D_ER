@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class PlatformDestroyer : MonoBehaviour
 {
-  private GameObject platformDestructionPoint;
+  private GameObject platDestructPoint;
+  private PlayerController pc;
 
   // Start is called before the first frame update
   void Start()
   {
-    platformDestructionPoint = GameObject.Find("PlatformDestructionPoint");
+    platDestructPoint = GameObject.Find("PlatformDestructionPoint");
+    pc = FindObjectOfType<PlayerController>();
   }
 
   // Update is called once per frame
   void Update()
   {
-    if (transform.position.x < platformDestructionPoint.transform.position.x)
+    if (transform.position.x < platDestructPoint.transform.position.x)
     {
       //   Destroy(this.gameObject);
+      if (this.gameObject.tag == "Collectible")
+      {
+        pc.junkMissed++;
+        print(pc.junkMissed.ToString());
+
+      }
       this.gameObject.SetActive(false);
     }
   }

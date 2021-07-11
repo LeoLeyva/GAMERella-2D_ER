@@ -4,39 +4,39 @@ using UnityEngine;
 
 public class ObjectPooler : MonoBehaviour
 {
-  public GameObject thePlatform;
-  [SerializeField] public GameObject pooledObject;
+  // public GameObject thePlatform;
+  [SerializeField] public GameObject pooledObj;
   [SerializeField] private int pooledAmount;
-  private List<GameObject> pooledObjects;
+  private List<GameObject> pooledObjs;
 
 
 
   // Start is called before the first frame update
   void Start()
   {
-    pooledObjects = new List<GameObject>();
+    pooledObjs = new List<GameObject>();
 
     for (int i = 0; i < pooledAmount; i++)
     {
-      GameObject obj = (GameObject)Instantiate(pooledObject);
+      GameObject obj = (GameObject)Instantiate(pooledObj);
       obj.SetActive(false);
-      pooledObjects.Add(obj);
+      pooledObjs.Add(obj);
     }
   }
 
   // Update is called once per frame
-  public GameObject GetPooledObject()
+  public GameObject GetPooledObj()
   {
-    for (int i = 0; i < pooledObjects.Count; i++)
+    for (int i = 0; i < pooledObjs.Count; i++)
     {
-      if (!pooledObjects[i].activeInHierarchy)
+      if (!pooledObjs[i].activeInHierarchy)
       {
-        return pooledObjects[i];
+        return pooledObjs[i];
       }
     }
-    GameObject obj = (GameObject)Instantiate(pooledObject);
+    GameObject obj = (GameObject)Instantiate(pooledObj);
     obj.SetActive(false);
-    pooledObjects.Add(obj);
+    pooledObjs.Add(obj);
     return obj;
   }
 }

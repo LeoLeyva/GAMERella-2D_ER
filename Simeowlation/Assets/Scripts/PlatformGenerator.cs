@@ -5,54 +5,87 @@ using UnityEngine;
 public class PlatformGenerator : MonoBehaviour
 {
   // Platform 
-  [SerializeField] private GameObject thePlatform;
+  // [SerializeField] private GameObject thePlat;
 
-  [SerializeField] private GameObject[] thePlatforms;
+  // [SerializeField] private GameObject[] thePlats;
 
   // New Platforms 
-  [SerializeField] private Transform generationPoint;
-  private int platformSelector;
+  [SerializeField] private Transform genPoint;
+  private int platSelector;
 
   // Distance 
-  [SerializeField] private float distanceBetween;
-  [SerializeField] private float distanceBetweenMin;
-  [SerializeField] private float distanceBetweenMax;
+  [SerializeField] private float distBetween;
+  [SerializeField] private float distBetweenMin;
+  [SerializeField] private float distBetweenMax;
 
   // Platform Widths 
-  private float platformWidth;
-  private float[] platformWidths;
+  private float platWidth;
+  private float[] platWidths;
 
-  // Object Pool 
-  [SerializeField] private ObjectPooler theObjectPool;
+  // Platform Heights 
+  private float minHgt;
+  [SerializeField] private Transform maxHgtPt;
+  private float maxHgt;
+  [SerializeField] private float maxHgtDiff;
+  private float hgtDiff;
+
+  // Object Pools
+  [SerializeField] private ObjectPooler[] theObjPools;
+
+  // Collectible 
+  private CollectibleGenerator cg;
+  [SerializeField] private float collectibleTheshold;
+
 
 
   // Start is called before the first frame update
   private void Start()
   {
-    // platformWidth = thePlatform.GetComponent<BoxCollider2D>().size.x;
-    platformWidths = new float[thePlatforms.Length];
-    for (int i = 0; i < thePlatforms.Length; i++)
+    // platformWidth = thePlat.GetComponent<BoxCollider2D>().size.x;
+    platWidths = new float[theObjPools.Length];
+    for (int i = 0; i < theObjPools.Length; i++)
     {
-      platformWidths[i] = thePlatforms[i].GetComponent<BoxCollider2D>().size.x;
+      platWidths[i] = theObjPools[i].GetPooledObj().GetComponent<BoxCollider2D>().size.x;
     }
+    minHgt = transform.position.y;
+    maxHgt = maxHgtPt.position.y;
+
+    cg = FindObjectOfType<CollectibleGenerator>();
   }
 
   // Update is called once per frame
   private void Update()
   {
-    if (transform.position.x < generationPoint.position.x)
+    if (transform.position.x < genPoint.position.x)
     {
-      distanceBetween = Random.Range(distanceBetweenMin, distanceBetweenMax);
-      platformSelector = Random.Range(0, thePlatforms.Length);
+      distBetween = Random.Range(distBetweenMin, distBetweenMax);
+      platSelector = Random.Range(0, theObjPools.Length);
+      hgtDiff = Random.Range(-maxHgtDiff, maxHgtDiff);
 
-      transform.position = new Vector3(transform.position.x + platformWidths[platformSelector] + distanceBetween, transform.position.y, transform.position.z);
+      if (hgtDiff > maxHgt)
+      {
+        hgtDiff = maxHgt;
+      }
+      else if (hgtDiff < minHgt)
+      {
+        hgtDiff = minHgt;
+      }
 
-      Instantiate(thePlatforms[platformSelector], transform.position, transform.rotation);
+      transform.position = new Vector3(transform.position.x + (platWidths[platSelector] / 2) + distBetween, hgtDiff, transform.position.z);
 
-      //   GameObject newPlatform = theObjectPool.GetPooledObject();
-      //   newPlatform.transform.position = transform.position;
-      //   newPlatform.transform.rotation = transform.rotation;
-      //   newPlatform.SetActive(true);
+      // Instantiate(thePlats[platSelector], transform.position, transform.rotation);
+
+      GameObject newplat = theObjPools[platSelector].GetPooledObj();
+      newplat.transform.position = transform.position;
+      newplat.transform.rotation = transform.rotation;
+      newplat.SetActive(true);
+
+      if (Random.Range(0f, 100f) < collectibleTheshold)
+      {
+        cg.SpawnCollectibles(new Vector3(transform.position.x, transform.position.y + 1.5f, transform.position.z));
+      }
+
+      transform.position = new Vector3(transform.position.x + (platWidths[platSelector] / 2), transform.position.y, transform.position.z);
 
     }
   }
